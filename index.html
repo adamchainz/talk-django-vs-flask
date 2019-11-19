@@ -1,0 +1,207 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>Django vs Flask</title>
+
+        <link rel="stylesheet" href="css/reveal.css">
+        <link rel="stylesheet" href="css/theme/django.css">
+
+        <!-- Theme used for syntax highlighting of code -->
+        <link rel="stylesheet" href="lib/css/zenburn.css">
+
+        <!-- Printing and PDF exports -->
+        <script>
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+            document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+
+<section>
+    <h1>Django vs Flask</h1>
+    <h2>Adam Johnson</h2>
+</section>
+
+<section>
+    <h1>Me</h1>
+    <ul>
+        <li>Adam Johnson</li>
+        <li>Django Core Developer &amp; Technical Board Member</li>
+        <li>@adamchainz on GitHub, Twitter</li>
+        <li>me@adamj.eu</li>
+    </ul>
+</section>
+
+<section>
+    <h1>Maybe I'm biased</h1>
+    <ul>
+        <li>Django developer since 2012</li>
+        <li>Worked on several large Django applications</li>
+        <li>Creator of Django libraries</li>
+    </ul>
+</section>
+
+<section data-background-image="img/blog-post.png" data-background-size="contain">
+</section>
+
+<section>
+    <h1>Flask Example</h1>
+<pre><code class="python">import html
+
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello():
+    name = request.args.get("name", "World")
+    return f'Hello, {html.escape(name)}!'
+
+
+if __name__ == '__main__':
+    app.run()
+</code></pre>
+</section>
+
+<section>
+    <h1>Django Example (1/3)</h1>
+<pre><code class="python">import html
+import os
+import sys
+
+from django.conf import settings
+from django.core.wsgi import get_wsgi_application
+from django.http import HttpResponse
+from django.urls import path
+from django.utils.crypto import get_random_string
+</code></pre>
+</section>
+
+<section>
+    <h1>Django Example (2/3)</h1>
+<pre><code class="python">settings.configure(
+    DEBUG=(os.environ.get("DEBUG", "") == "1"),
+    ALLOWED_HOSTS=["*"],  # DANGER
+    ROOT_URLCONF=__name__,
+    SECRET_KEY=get_random_string(50),  # bad
+)
+
+
+def index(request):
+    name = request.GET.get("name", "World")
+    return HttpResponse(f"Hello, {html.escape(name)}!")
+
+
+urlpatterns = [path("", index)]
+</code></pre>
+</section>
+
+<section>
+    <h1>Django Example (3/3)</h1>
+<pre><code class="python">app = get_wsgi_application()
+
+if __name__ == "__main__":
+    from django.core.management import execute_from_command_line
+    execute_from_command_line(sys.argv)
+</code></pre>
+</section>
+
+<section>
+    <h1>Comparison: Application</h1>
+    <ul>
+        <li>Flask: application object control</li>
+        <li>Django: one application in a process</li>
+        <li>Flask: WSGI centric</li>
+        <li>Django: WSGI was an afterthought, but now ASGI support</li>
+    </ul>
+</section>
+
+<section>
+    <h1>Comparison: View Functions</h1>
+    <ul>
+        <li>Flask: global request - harmful?</li>
+        <li>Django: passed request</li>
+        <li>Flask: return a <code>str</code>, or <code>tuple</code>, or response</li>
+        <li>Django: TOOWTDI - return a response</li>
+    </ul>
+</section>
+
+<section>
+    <h1>URL Configuration</h1>
+    <ul>
+        <li>Flask: <code>@route()</code>, or <code>add_url_rule()</code>, or <code>url_map</code>.</li>
+        <li>Django: TOOWTDI - URL patterns</li>
+    </ul>
+</section>
+
+<section>
+    <h1>Development Mode</h1>
+    <ul>
+        <li>Flask: set env var <code>FLASK_ENV=development</code>.</li>
+        <li>Django: set <code>DEBUG</code> setting.</li>
+    </ul>
+</section>
+
+<section>
+    <h1>Security</h1>
+    <ul>
+        <li>Both using <code>html.escape</code></li>
+        <li>Django: host validation</li>
+        <li>Django: needs secret key</li>
+        <li>Django: batteries included</li>
+        <li>Flask: use third party libraries</li>
+        <li>Django: security team</li>
+    </ul>
+</section>
+
+<section>
+    <h1>Batteries</h1>
+    <ul>
+        <li>Flask: templates with Jinja2</li>
+        <li>Django: templates, ORM, admin, translations, geographic data, ...</li>
+    </ul>
+</section>
+
+<section>
+    <h1>Ecosystem</h1>
+    <ul>
+        <li>Flask: ~70 packages</li>
+        <li>Django: thousands of packages</li>
+    </ul>
+</section>
+
+<section>
+    <h1>Thank you!</h1>
+    <ul>
+        <li><a href="https://github.com/adamchainz/talk-django-vs-flask">github.com/adamchainz/talk-django-vs-flask</a></li>
+        <li>@adamchainz on GitHub, Twitter</li>
+        <li>me@adamj.eu</li>
+        <li>adamj.eu/tech/</li>
+    </ul>
+</section>
+
+            </div>
+        </div>
+
+        <script src="lib/js/head.min.js"></script>
+        <script src="js/reveal.js"></script>
+
+        <script>
+            // More info https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                history: true,
+                dependencies: [
+                    { src: 'js/plugin/highlight/highlight.js', async: true },
+                ]
+            });
+        </script>
+    </body>
+</html>
